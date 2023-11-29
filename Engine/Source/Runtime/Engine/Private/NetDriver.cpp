@@ -2224,6 +2224,7 @@ void UNetDriver::ProcessRemoteFunctionForChannelPrivate(
 		}
 		else
 		{
+			Ch->PrintReliableBunchBuffer();
 			// The connection has overflowed the reliable buffer. We cannot recover from this. Disconnect this user.
 			UE_LOG(LogNet, Warning, TEXT("Closing connection. Can't send function '%s' on '%s': Reliable buffer overflow. FieldCache->FieldNetIndex: %d Max %d. Ch MaxPacket: %d."), *GetNameSafe(Function), *GetFullNameSafe(TargetObj), FieldCache->FieldNetIndex, ClassCache->GetMaxIndex(), Ch->Connection->MaxPacket );
 
