@@ -1752,8 +1752,9 @@ void FObjectReplicator::PostSendBunch( FPacketIdRange & PacketRange, uint8 bReli
 
 	check(RepLayout);
 
+	extern bool bPauseReplicateActor;
 	// Don't update retirement records for reliable properties. This is ok to do only if we also pause replication on the channel until the acks have gone through.
-	bool SkipRetirementUpdate = OwningChannel->bPausedUntilReliableACK;
+	bool SkipRetirementUpdate = OwningChannel->bPausedUntilReliableACK || bPauseReplicateActor;
 
 	const FRepLayout& LocalRepLayout = *RepLayout;
 

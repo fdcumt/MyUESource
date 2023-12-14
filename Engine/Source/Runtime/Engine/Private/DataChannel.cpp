@@ -94,6 +94,13 @@ static FAutoConsoleVariableRef CVarDormancyHysteresis(
 	TEXT("When > 0, represents the time we'll wait before letting a channel become fully dormant (in seconds). This can prevent churn when objects are going in and out of dormant more frequently than normal.")
 );
 
+bool bPauseReplicateActor = false;
+static FAutoConsoleVariableRef CVarPauseReplicateActor(
+	TEXT("net.PauseReplicateActor"),
+	bPauseReplicateActor,
+	TEXT("true for pause replicate actor.")
+);
+
 template<typename T>
 static const bool IsBunchTooLarge(UNetConnection* Connection, T* Bunch)
 {
@@ -2999,6 +3006,11 @@ int64 UActorChannel::ReplicateActor()
 		FString Error(FString::Printf(TEXT("ReplicateActor called with PendingKill Actor! %s"), *Describe()));
 		UE_LOG(LogNet, Log, TEXT("%s"), *Error);
 		ensureMsgf(false, TEXT("%s"), *Error);
+		return 0;
+	}
+
+	if (bPauseReplicateActor)
+	{
 		return 0;
 	}
 
