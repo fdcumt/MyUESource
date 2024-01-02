@@ -100,6 +100,8 @@ private:
 
 private:
 
+	void PrintReceiveTimeInterval(float DeltaSeconds);
+
 	/** Handles any SendTo errors on the game thread. */
 	void HandleSocketSendResult(const FSocketSendResult& Result, ISocketSubsystem* SocketSubsystem);
 
@@ -172,4 +174,6 @@ protected:
 	virtual void HandleConnectionTimeout(const FString& ErrorStr) override;
 
 	friend class FIpConnectionHelper;
+
+	double LastShowReceiveTime = 0.;
 };

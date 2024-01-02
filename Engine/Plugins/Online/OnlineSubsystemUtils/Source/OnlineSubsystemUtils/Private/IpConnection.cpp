@@ -45,6 +45,13 @@ TAutoConsoleVariable<int32> CVarNetIpConnectionDisableResolution(
 	TEXT("If enabled, any future ip connections will not use resolution methods."),
 	ECVF_Default | ECVF_Cheat);
 
+float ShowNetReceiveTimeInterval = 2.f;
+static FAutoConsoleVariableRef CVarShowNetReceiveTimeInterval(
+	TEXT("net.ShowNetReceiveTimeInterval"),
+	ShowNetReceiveTimeInterval,
+	TEXT("Show Net ReceiveTime Interval"));
+
+
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 UIpConnection::UIpConnection(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer),
@@ -651,4 +658,29 @@ FString UIpConnection::LowLevelDescribe()
 		:	State==USOCK_Closed		?	TEXT("Closed")
 		:								TEXT("Invalid")
 	);
+}
+
+void UIpConnection::PrintReceiveTimeInterval(float DeltaSeconds)
+{
+	const double Seconds = FPlatformTime::Seconds();
+
+	if (LastShowReceiveTime == 0.0)
+	{
+		LastShowReceiveTime = Seconds;
+	}
+	else if (Seconds - LastShowReceiveTime > ShowNetReceiveTimeInterval)
+	{
+		LastShowReceiveTime = Seconds;
+
+		const double DriverElapsedTime = Driver->GetElapsedTime();
+		const double ReceiveRealtimeDelta = Seconds - LastReceiveRealtime;
+		const double GoodRealtimeDelta = Seconds - LastGoodPacketRealtime;
+
+		UE_LOG(LogNet, Log, TEXT("CheckReceiveTime. Elapsed: %2.2f, Real: %2.2f, Good: %2.2f, DriverTime: %2.2f, %s"),
+			DriverElapsedTime - LastReceiveTime,
+			ReceiveRealtimeDelta,
+			GoodRealtimeDelta,
+			DriverElapsedTime,
+			*Describe());
+	}
 }
